@@ -1,0 +1,59 @@
+Step 1: Create the Database
+First, click on the SQL tab at the top of phpMyAdmin and run this to create and select your database:
+
+SQL
+CREATE DATABASE IF NOT EXISTS smart_visitor_entry;
+USE smart_visitor_entry;
+
+Step 2: Create the Tables
+You can copy and paste these queries one by one (or all at once) into the SQL box.
+
+1. The admin_users Table
+This stores the credentials for people who manage the system settings.
+CREATE TABLE admin_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+2. The security_users Table
+This is for the guards or front-desk staff who actually check people in.
+CREATE TABLE security_users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    badge_number VARCHAR(20) UNIQUE,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    shift_type ENUM('Day', 'Night'),
+    status TINYINT(1) DEFAULT 1
+);
+
+3. The visitors Table
+This stores the master profiles of everyone who has ever visited.
+
+SQL
+CREATE TABLE visitors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20) UNIQUE,
+    id_proof_type VARCHAR(50),
+    id_proof_number VARCHAR(50),
+    address TEXT,
+    photo_url VARCHAR(255)
+);
+4. The entry_logs Table
+This tracks every single entry and exit. It links back to the visitor and the security person.
+
+SQL
+CREATE TABLE entry_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    visitor_id INT,
+    security_id INT,
+    purpose_of_visit VARCHAR(255),
+    whom_to_meet VARCHAR(100),
+    check_in DATETIME DEFAULT CURRENT_TIMESTAMP,
+    check_out DATETIME NULL,
+    FOREIGN KEY (visitor_id) REFERENCES visitors(id),
+    FOREIGN KEY (security_id) REFERENCES security_users(id)
+);
